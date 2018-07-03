@@ -108,7 +108,7 @@ public class HandDetector {
 		}
 
 		int i = 0;
-		while (i < 5) {
+		while (i < 10) {
 			i++;
 			int[][] temp = new int[result.length][result[0].length];
 			for(int x = 0; x < result.length; x++){
@@ -129,42 +129,48 @@ public class HandDetector {
 					Color topCenter = new Color(result[x][y - 1]);
 					Color bottomCenter = new Color(result[x][y + 1]);
 					double angle = Math.toDegrees(angles[x][y]);
-					if(angle < 0){
-						angle += 360;
-					}
 					Color black = new Color(0, 0, 0);
 					if (middle.getRed() == 255) {
 						if (angle >= 22.5 && angle <= 67.5) {
 							// top right & bottom left
-							double topRightAng = angles[x + 1][y - 1];
-							double bottomLeftAng = angles[x - 1][y + 1];
-							if (topRightAng >= 22.5 && topRightAng <= 67.5 && topRight.getRed() > 30) {
+							double topRightAng = Math.toDegrees(angles[x + 1][y - 1]);
+							double bottomLeftAng = Math.toDegrees(angles[x - 1][y + 1]);
+							if (topRightAng >= 22.5 && topRightAng <= 67.5 && topRight.getRed() > 50) {
 								temp[x + 1][y - 1] = middle.getRGB();
 							}
-							if (bottomLeftAng >= 22.5 && bottomLeftAng <= 67.5 && bottomLeft.getRed() > 30) {
+							if (bottomLeftAng >= 22.5 && bottomLeftAng <= 67.5 && bottomLeft.getRed() > 50) {
 								temp[x - 1][y + 1] = middle.getRGB();
 							}
 						} else if (angle >= 67.5 && angle <= 90 || angle >= 270 && angle <= 282.5) {
 							// middle left & middle right
-							double middleLeftAng = angles[x - 1][y];
-							double middleRightAng = angles[x + 1][y];
+							double middleLeftAng = Math.toDegrees(angles[x - 1][y]);
+							double middleRightAng = Math.toDegrees(angles[x + 1][y]);
 							if ((middleLeftAng >= 67.5 && middleLeftAng <= 90
-									|| middleLeftAng >= 270 && middleLeftAng <= 282.5) && middleLeft.getRed() > 30) {
+									|| middleLeftAng >= 270 && middleLeftAng <= 282.5) && middleLeft.getRed() > 50) {
 								temp[x - 1][y] = middle.getRGB();
 							}
 							if ((middleRightAng >= 67.5 && middleRightAng <= 90
-									|| middleRightAng >= 270 && middleRightAng <= 282.5) && middleRight.getRed() > 30) {
+									|| middleRightAng >= 270 && middleRightAng <= 282.5) && middleRight.getRed() > 50) {
 								temp[x + 1][y] = middle.getRGB();
 							}
 						} else if (angle >= 282.5 && angle <= 337.5) {
 							// top left & bottom right
-							double topLeftAng = angles[x + 1][y - 1];
-							double bottomRightAng = angles[x - 1][y + 1];
-							if (topLeftAng >= 282.5 && topLeftAng <= 337.5 && topLeft.getRed() > 30) {
+							double topLeftAng = Math.toDegrees(angles[x - 1][y - 1]);
+							double bottomRightAng = Math.toDegrees(angles[x + 1][y + 1]);
+							if (topLeftAng >= 282.5 && topLeftAng <= 337.5 && topLeft.getRed() > 50) {
 								temp[x - 1][y - 1] = middle.getRGB();
 							}
-							if (bottomRightAng >= 282.5 && bottomRightAng <= 337.5 && bottomRight.getRed() > 30) {
+							if (bottomRightAng >= 282.5 && bottomRightAng <= 337.5 && bottomRight.getRed() > 50) {
 								temp[x + 1][y + 1] = middle.getRGB();
+							}
+						} else if (angle < 22.5 || angle >= 337.5){
+							// top center & bottom center
+							double topCenterAng = Math.toDegrees(angles[x][y - 1]);
+							double bottomCenterAng = Math.toDegrees(angles[x][y + 1]);
+							if ((topCenterAng < 22.5 || topCenterAng >= 337.5) && topCenter.getRed() > 50){
+								temp[x][y - 1] = middle.getRGB();
+							} else if((bottomCenterAng < 22.5 || bottomCenterAng >= 337.5) && bottomCenter.getRed() > 50){
+								temp[x][y + 1] = middle.getRGB();
 							}
 						}
 					}
@@ -247,10 +253,14 @@ public class HandDetector {
 					val = 255;
 				}
 				double angle;
-				if (val1 > 0) {
+				if (val1 != 0) {
 					angle = Math.atan(val2 / val1);
 				} else {
 					angle = Math.PI / 2;
+				}
+				
+				if(angle < 0){
+					angle += Math.PI * 2;
 				}
 				
 				angles[x][y] = angle;
